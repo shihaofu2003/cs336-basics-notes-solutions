@@ -1,7 +1,5 @@
 import mmap
-import heapq
-import pickle
-
+import cProfile
 from collections import defaultdict
 import time
 from tqdm import tqdm
@@ -49,9 +47,6 @@ def vocab_merge_process(vocab_max_size: int,
     merges: list[tuple[bytes, bytes]] = []
     indices_merges: list[tuple[int, int]] = []
 
-    # heap = [(-cnt, pair) for pair, cnt in pair_counts.items()]
-    # heapq.heapify(heap)
-
     for i in tqdm(range(vocab_size, vocab_max_size), desc="BPE training"):
         pair_max_single = max(pair_counts, key=pair_counts.get)
         pairs_max = [pair for pair, pair_count in pair_counts.items() if pair_count == pair_counts[pair_max_single]]
@@ -79,30 +74,33 @@ def vocab_merge_process(vocab_max_size: int,
                     new_indices.append(new_index)
 
                     if j >= 1:
-                        pair_counts[(indices[j - 1], new_index)] += bytes_word_counts[bytes_word]
-                        pair_in_words[(indices[j - 1], new_index)].add(bytes_word)
-
                         pair_counts[(indices[j - 1], indices[j])] -= bytes_word_counts[bytes_word]
                         if pair_counts[(indices[j - 1], indices[j])] <= 0:
                             pair_in_words[(indices[j - 1], indices[j])].discard(bytes_word)
 
                     if j + 2 < len(indices):
-                        pair_counts[(new_index, indices[j + 2])] += bytes_word_counts[bytes_word]
-                        pair_in_words[(new_index, indices[j + 2])].add(bytes_word)
-
                         pair_counts[(indices[j + 1], indices[j + 2])] -= bytes_word_counts[bytes_word]
                         if pair_counts[(indices[j + 1], indices[j + 2])] <= 0:
                             pair_in_words[(indices[j + 1], indices[j + 2])].discard(bytes_word)
 
                     pair_counts[pair_max] -= bytes_word_counts[bytes_word]
                     if pair_counts[pair_max] <= 0:
+                        del pair_counts[pair_max]
                         pair_in_words[pair_max].discard(bytes_word)
 
                     j += 2
                 else:
                     new_indices.append(indices[j])
                     j += 1
+
+            for idx1, idx2 in zip(new_indices[:], new_indices[1:]):
+                if idx1 == new_index or idx2 == new_index:
+                    pair_counts[(idx1, idx2)] += bytes_word_counts[bytes_word]
+                    pair_in_words[(idx1, idx2)].add(bytes_word)
+
             indices_bytes_words[bytes_word] = new_indices
+
+        assert pair_counts[pair_max] == 0
     return vocab, merges, indices_merges
 
 
@@ -181,27 +179,39 @@ def train_bpe_parallelism(
 if __name__ == "__main__":
     start = time.perf_counter()
 
+    text_file = "TinyStories_valid"
     input_path = f"../../data/TinyStories/TinyStoriesV2-GPT4-valid.txt"
+    # input_path = f"data/owt/{text_file}.txt"
+
     # input_path = f"../../data/TinyStories/"
-    vocab_size = 500
+    vocab_size = 5000
     special_tokens = ["<|endoftext|>"]
+
+    # vocab, merges, indices_merges = train_bpe(input_path, vocab_size, special_tokens)
+    # pr = cProfile.Profile()
+    # pr.enable()
 
     # vocab, merges, indices_merges = train_bpe(input_path, vocab_size, special_tokens)
     vocab, merges, indices_merges = train_bpe_parallelism(input_path, vocab_size, special_tokens, 20, 20)
 
+
+    # pr.disable()
+    # pr.print_stats(sort='cumulative')  # 显示前20行
+
+    longest_token = b''
+    longest_idx = -1
+    for idx, bytes_token in vocab.items():
+        if len(longest_token) < len(bytes_token):
+            longest_token = bytes_token
+            longest_idx = idx
+    print("longest token: ", longest_idx, " ", vocab[longest_idx])
+
     save_vocab_merges(vocab, merges,
-                      "./vocab.json",
-                      "./vocab_merges.txt"
+                      f"./{text_file}_vocab.json",
+                      f"./{text_file}_vocab_merges.txt"
                       )
     end = time.perf_counter()
-    print(f"train bpe : {end - start:.6f}s")
+    print(f"train bpe : {end - start:.2f}s")
 
-    ref_vocab, ref_merges = load_vocab_merges("./vocab.json",
-                      "./vocab_merges.txt")
+    ref_vocab, ref_merges = load_vocab_merges(f"./{text_file}_vocab.json",f"./{text_file}_vocab_merges.txt")
 
-    assert len(merges) == len(ref_merges)
-    assert merges == ref_merges
-
-    assert len(vocab) == len(ref_vocab)
-    assert set(vocab.keys()) == set(ref_vocab.keys())
-    assert set(vocab.values()) == set(ref_vocab.values())
