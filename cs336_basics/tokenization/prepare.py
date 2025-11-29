@@ -164,7 +164,7 @@ def save_vocab_merges(vocab: dict,
     byte_to_unicode = gpt2_byte_to_unicode()
 
     inv_vocab = {''.join(byte_to_unicode[byte_token] for byte_token in bytes_token): idx
-                 for idx, bytes_token in reversed(vocab.items())}
+                 for idx, bytes_token in vocab.items()}
     with open(vocab_path, 'w', encoding="utf-8") as f:
         json.dump(inv_vocab, f, ensure_ascii=False, indent=2)
     f.close()

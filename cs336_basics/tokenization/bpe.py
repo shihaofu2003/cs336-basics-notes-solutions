@@ -177,14 +177,18 @@ def train_bpe_parallelism(
 
 
 if __name__ == "__main__":
+    import pathlib
+
+    File_PATH = pathlib.Path(__file__).resolve().parent
+
     start = time.perf_counter()
 
-    text_file = "TinyStories_valid"
-    input_path = f"../../data/TinyStories/TinyStoriesV2-GPT4-valid.txt"
+    text_file = "TinyStories_train"
+    input_path = f"data/TinyStories/TinyStoriesV2-GPT4-train.txt"
     # input_path = f"data/owt/{text_file}.txt"
 
     # input_path = f"../../data/TinyStories/"
-    vocab_size = 5000
+    vocab_size = 10000
     special_tokens = ["<|endoftext|>"]
 
     # vocab, merges, indices_merges = train_bpe(input_path, vocab_size, special_tokens)
@@ -192,7 +196,7 @@ if __name__ == "__main__":
     # pr.enable()
 
     # vocab, merges, indices_merges = train_bpe(input_path, vocab_size, special_tokens)
-    vocab, merges, indices_merges = train_bpe_parallelism(input_path, vocab_size, special_tokens, 20, 20)
+    vocab, merges, indices_merges = train_bpe_parallelism(input_path, vocab_size, special_tokens, 200, 200)
 
 
     # pr.disable()
@@ -207,11 +211,16 @@ if __name__ == "__main__":
     print("longest token: ", longest_idx, " ", vocab[longest_idx])
 
     save_vocab_merges(vocab, merges,
-                      f"./{text_file}_vocab.json",
-                      f"./{text_file}_vocab_merges.txt"
+                      f"{File_PATH}/{text_file}_vocab.json",
+                      f"{File_PATH}/{text_file}_vocab_merges.txt"
                       )
     end = time.perf_counter()
     print(f"train bpe : {end - start:.2f}s")
 
-    ref_vocab, ref_merges = load_vocab_merges(f"./{text_file}_vocab.json",f"./{text_file}_vocab_merges.txt")
+    ref_vocab, ref_merges = load_vocab_merges(f"{File_PATH}/{text_file}_vocab.json",f"{File_PATH}/{text_file}_vocab_merges.txt")
 
+    assert len(merges) == len(ref_merges)
+    assert merges == ref_merges
+    assert len(vocab) == len(ref_vocab)
+    assert set(vocab.keys()) == set(ref_vocab.keys())
+    assert set(vocab.values()) == set(ref_vocab.values())
