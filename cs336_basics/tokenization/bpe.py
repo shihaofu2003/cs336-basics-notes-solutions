@@ -157,7 +157,9 @@ def train_bpe_parallelism(
     print("boundaries: ", boundaries, "num_chunks: ", num_chunks)
     with Pool(processes=num_processes) as pool:  # 8个进程，可根据CPU核心数调整
         args = [(input_path, boundaries[i], boundaries[i + 1], special_tokens) for i in range(num_chunks)]
-        for result in pool.imap(process_chunk, args):
+        results = tqdm(pool.imap_unordered(process_chunk, args),
+                       total=num_chunks, desc="BPE chunks")
+        for result in results:
             local_pairs, local_bw_counts, local_indices, local_pair_words = result
 
             for pair, cnt in local_pairs.items():
@@ -183,8 +185,8 @@ if __name__ == "__main__":
 
     start = time.perf_counter()
 
-    text_file = "TinyStories_train"
-    input_path = f"data/TinyStories/TinyStoriesV2-GPT4-train.txt"
+    text_file = "TinyStories_valid"
+    input_path = f"data/TinyStories/TinyStoriesV2-GPT4-valid.txt"
     # input_path = f"data/owt/{text_file}.txt"
 
     # input_path = f"../../data/TinyStories/"
@@ -196,7 +198,7 @@ if __name__ == "__main__":
     # pr.enable()
 
     # vocab, merges, indices_merges = train_bpe(input_path, vocab_size, special_tokens)
-    vocab, merges, indices_merges = train_bpe_parallelism(input_path, vocab_size, special_tokens, 200, 200)
+    vocab, merges, indices_merges = train_bpe_parallelism(input_path, vocab_size, special_tokens, 20, 20)
 
 
     # pr.disable()
