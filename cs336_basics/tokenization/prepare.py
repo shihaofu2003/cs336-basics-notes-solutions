@@ -1,8 +1,10 @@
 import os
+import pathlib
 from typing import BinaryIO
 import regex as re
 import json
 import pickle
+
 
 
 def find_chunk_boundaries(
@@ -115,6 +117,7 @@ def split_words_with_special(
     escaped = sorted((re.escape(tok) for tok in special_tokens), key=len, reverse=True)
     special_pat = "(" + "|".join(escaped) + ")"
     parts = re.split(special_pat, chunk)
+    print("parts: ", parts)
     bytes_words: list[str] = []
     for part in parts:
         if not part:
@@ -205,12 +208,15 @@ def load_vocab_merges(vocab_path, merges_path):
     return vocab, merges
 
 
+
+
+
 if __name__ == "__main__":
     text = """Once upon a
-<|endoftext|>
-there was a reliable otter named Ollie.
-<|endoftext|>
-One day, a little"""
+    <|endoftext|>
+    there was a reliable otter named Ollie.
+    <|endoftext|>
+    One day, a little"""
 
     special_tokens = ['<|endoftext|>']
 

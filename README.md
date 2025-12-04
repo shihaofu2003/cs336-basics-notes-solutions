@@ -34,6 +34,10 @@ gunzip owt_valid.txt.gz
 cd ..
 ```
 
+
+
+Also you can Download [our owt and TinyStories Tokenization Results in Google Drive](https://drive.google.com/drive/folders/1ZdZdMzgWSapEUs4l4QgzG0J5fn5LtPoj?usp=sharing)
+
 ---
 
 # 📂 项目文件结构
@@ -58,4 +62,3 @@ project_name/
 │── docs/                    
 
 ```
-

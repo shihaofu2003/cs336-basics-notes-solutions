@@ -159,6 +159,8 @@ def train_bpe_parallelism(
         args = [(input_path, boundaries[i], boundaries[i + 1], special_tokens) for i in range(num_chunks)]
         results = tqdm(pool.imap_unordered(process_chunk, args),
                        total=num_chunks, desc="BPE chunks")
+
+
         for result in results:
             local_pairs, local_bw_counts, local_indices, local_pair_words = result
 
