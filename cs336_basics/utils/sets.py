@@ -2,11 +2,12 @@ import random
 import os
 import numpy as np
 import torch
+from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 import wandb
 
 from cs336_basics.models.functions import cross_entropy, gradient_clipping, learning_rate_schedule
-from cs336_basics.datasets.loading import data_loading
+from cs336_basics.datasets.loading import data_loading, valid_data_loading
 from cs336_basics.utils.config import Config
 from cs336_basics.utils.checkpoints import load_checkpoint, save_checkpoint
 
@@ -64,17 +65,19 @@ def wandb_set(cfg: DictConfig | Config) -> wandb.Run | None:
 
 def train_one_epoch(model: torch.nn.Module,
                     optimizer: torch.optim.Optimizer,
-                    dataset,
+                    train_dataset,
+                    valid_dataset,
                     run: wandb.Run | None,
                     cfg: Config,
                     device: torch.device):
+    print()
     model.train()
 
     total_loss = 0.0
 
-    for step in range(cfg.trainer.iters_per_epoch):
+    for step in tqdm(range(cfg.trainer.iters_per_epoch)):
         # load_data
-        x, y = data_loading(dataset, cfg.trainer.batch_size, cfg.model.context_length, device)
+        x, y = data_loading(train_dataset, cfg.trainer.batch_size, cfg.model.context_length, device)
         x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
         # print("x: ", x.device, "y: ", y.device)
 
@@ -85,13 +88,6 @@ def train_one_epoch(model: torch.nn.Module,
 
         # backward_process + clipping + update
         loss.backward()
-
-        # for name, param in model.named_parameters():
-        #     if param.grad is not None:
-        #         print(name, param.device, param.grad.device)
-        #     else:
-        #         print("⚠️ No grad for:", name)
-
 
         gradient_clipping(model.parameters(),
                           max_l2_norm=cfg.clipping.max_l2_norm, eps=cfg.clipping.eps)
@@ -110,11 +106,30 @@ def train_one_epoch(model: torch.nn.Module,
 
         if run is not None:
             wandb.log({"train/loss": total_loss/(step+1), "iter": step})
-
         if (step + 1) % cfg.trainer.log_interval == 0:
-            print(f"Iter {step+1}, Avg_logg:{total_loss/(step+1): .2f}")
+            print(f"Training Iter {step+1}, Avg_loss:{total_loss/(step+1): .2f}")
 
+        # Save and Validation
         if (step + 1) % cfg.trainer.save_interval == 0:
+            with torch.no_grad():
+                valid_loss = 0.
+
+                step_valid = 0
+                for valid_x, valid_y in valid_data_loading(valid_dataset,
+                                                           cfg.trainer.batch_size,
+                                                           cfg.model.context_length,
+                                                           device):
+
+                    valid_x, valid_y = valid_x.to(device, non_blocking=True), valid_y.to(device, non_blocking=True)
+                    pred = model(valid_x)
+
+                    valid_loss += cross_entropy(pred, valid_y).item()
+                    step_valid += 1
+
+                print(f"Valid Iter {step + 1}, Avg_logg:{valid_loss / step_valid: .2f}")
+                if run is not None:
+                    wandb.log({"valid/loss": valid_loss / step_valid, "iter": step})
+
             if not os.path.exists("checkpoints"):
                 os.makedirs("checkpoints")
             save_checkpoint(model, optimizer, step,

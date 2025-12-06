@@ -65,6 +65,9 @@ class DatasetConfig:
     train_data_path: str = "../data/TinyStories/TinyStoriesV2-GPT4-train.txt"
     # yaml 里写的是 1e4（float），这里改成 int 更合理
     train_data_shape: int = 10_000
+    valid_data_path: str = "../data/TinyStories/TinyStoriesV2-GPT4-train.txt"
+    # yaml 里写的是 1e4（float），这里改成 int 更合理
+    valid_data_shape: int = 10_000
 
 
 @dataclass

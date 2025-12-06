@@ -274,16 +274,16 @@ def encode_file_parallelism(file_path, vocab_path, merges_path, npy_path, num_ch
 if __name__ == "__main__":
     FIXTURES_PATH = pathlib.Path(__file__).resolve().parent.parent.parent
 
-    # file_path = FIXTURES_PATH / "data/TinyStories/TinyStoriesV2-GPT4-train.txt"
-    # vocab_path = FIXTURES_PATH / "data/TinyStories/TinyStories_train_vocab.json"
-    # merges_path = FIXTURES_PATH / "data/TinyStories/TinyStories_train_vocab_merges.txt"
-    # npy_path = FIXTURES_PATH / "data/TinyStories/TinyStories_train.npy"
-    # # encode_file(file_path, vocab_path, merges_path, npy_path)
-    # encode_file_parallelism(file_path, vocab_path, merges_path, npy_path, 1000, 10)
-
-    file_path = FIXTURES_PATH / "data/owt/owt_train.txt"
-    vocab_path = FIXTURES_PATH / "data/owt/owt_train_vocab.json"
-    merges_path = FIXTURES_PATH / "data/owt/owt_train_vocab_merges.txt"
-    npy_path = FIXTURES_PATH / "data/owt/owt_train.npy"
+    file_path = FIXTURES_PATH / "data/TinyStories/TinyStoriesV2-GPT4-valid.txt"
+    vocab_path = FIXTURES_PATH / "data/TinyStories/TinyStories_train_vocab.json"
+    merges_path = FIXTURES_PATH / "data/TinyStories/TinyStories_train_vocab_merges.txt"
+    npy_path = FIXTURES_PATH / "data/TinyStories/TinyStories_valid.npy"
     # encode_file(file_path, vocab_path, merges_path, npy_path)
-    encode_file_parallelism(file_path, vocab_path, merges_path, npy_path, 4000, 300)
+    encode_file_parallelism(file_path, vocab_path, merges_path, npy_path, 100, 10)
+
+    # file_path = FIXTURES_PATH / "data/owt/owt_train.txt"
+    # vocab_path = FIXTURES_PATH / "data/owt/owt_train_vocab.json"
+    # merges_path = FIXTURES_PATH / "data/owt/owt_train_vocab_merges.txt"
+    # npy_path = FIXTURES_PATH / "data/owt/owt_train.npy"
+    # # encode_file(file_path, vocab_path, merges_path, npy_path)
+    # encode_file_parallelism(file_path, vocab_path, merges_path, npy_path, 4000, 300)
