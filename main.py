@@ -79,20 +79,19 @@ def main(cfg: Config):
         weight_decay=cfg.optimizer.weight_decay
     )
 
-    dataset = np.memmap(filename=cfg.dataset.train_data_path,
-                        dtype=np.int32,
-                        mode="r+",
-                        shape=(cfg.dataset.train_data_shape,))
+    train_dataset = np.load(cfg.dataset.train_data_path)
+    valid_dataset = np.load(cfg.dataset.valid_data_path)
 
     # 5. 保存当前 config 副本（包括命令行 override 后的最终结果）
     save_config_snapshot(cfg, filename="config_used.yaml")
 
     # # 6. 初始化 wandb（如果开启）
     run = wandb_set(cfg)
+    # run = None
 
     # 7. 训练循环
     for epoch in range(cfg.trainer.epochs):
-        avg_loss = train_one_epoch(model, optimizer, dataset, run, cfg, device)
+        avg_loss = train_one_epoch(model, optimizer, train_dataset, valid_dataset, run, cfg, device)
         print(f"[Epoch {epoch}] loss = {avg_loss:.4f}")
 
         # log 到 wandb

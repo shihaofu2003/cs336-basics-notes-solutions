@@ -1,14 +1,86 @@
-# My CS336 Spring 2025 Assignment 1: Basics Notes and Solutions
+# CS336 Assignment 1: Basics - Implementation & Notes
+
+This repository contains my full implementation, notes, and experimental results for the **CS336 (Spring 2025) Assignment 1: Basics**.  
 
 
 
-For a full **problem solutions** of this assignment, see the notion website at [CS336_Assignment1_Solutions](https://eager-alibi-97f.notion.site/assignment-1-Basics-298f0625020f807c9db1e336d1fe4263?source=copy_link)
+## ✨ Highlights
 
-For a full **code Implementation** of this assignment, see the library `cs336_basics` 
+### 🔥 Train Everything on a Single RTX 3090 (24GB)
 
-For a full **notes** of this assignment, please wait me to update my notion websites hear.
+All experiments are completed on **one NVIDIA GeForce RTX 3090 (24GB)** within **≈1 hour of training time**.
+ No need to worry about compute — simply follow our configuration and you can fully reproduce the results.
 
+### Fully Open Resources
 
+To help you finish and verify the assignment quickly, we provide *everything*:
+
+- Full **code implementation**
+- **Tokenized datasets**
+- **Training logs and learning curves**
+- **Generated stories**
+- **Notes and Q&A solutions**
+
+### Extra Features Beyond the Assignment Requirements
+
+We implemented several practical features commonly used in modern LLM systems:
+
+- Parallel tokenizer encoding
+- Advanced generation configurations:
+  - `top-k`
+  - `do_sample`
+  - `repetition_penalty`
+
+### Training Efficiency
+
+Using only **81,920,000 tokens** from TinyStories (¼ of the official requirement):
+
+- Our model reaches **validation loss = 1.536**
+  *(assignment target: 1.45)*
+
+Larger training budgets will likely achieve even lower loss.
+
+### LLM-Judge Evaluation
+
+We evaluate generated stories with **Qwen3-max** as an LLM-based judge:
+
+- Story quality score: **7.6 / 10**
+
+------
+
+## Resources
+
+* Full Solutions
+
+  * [Complete problem solutions (Notion)](https://eager-alibi-97f.notion.site/assignment-1-Basics-298f0625020f807c9db1e336d1fe4263)
+
+  
+
+* Codebase
+
+  * Complete implementation packaged as: **`cs336_basics`**
+
+    
+
+* Notes (Updating)
+
+  *  [Lec2: PyTorch & Resource Accounting](https://eager-alibi-97f.notion.site/Lec2-PyTorch-resource-accounting-2b1f0625020f80d781d1f570c63a3e5d)
+
+  
+
+* Tokenized Data
+
+  * [Google Drive (preprocessed TinyStories & OWT)](https://drive.google.com/drive/folders/1ZdZdMzgWSapEUs4l4QgzG0J5fn5LtPoj)
+
+  
+
+* Training Logs & Learning Curves ([wandb](https://wandb.ai/fshihao900/cs336-basics))
+
+  
+
+* Generation Configurations & Stories ([wandb table](https://wandb.ai/fshihao900/cs336-basics))
+
+------
 
 ## Setup
 
@@ -17,7 +89,10 @@ For a full **notes** of this assignment, please wait me to update my notion webs
 We suggest that you should `git clone` the full code from [the official cs336-basics repository](https://github.com/stanford-cs336/assignment1-basics#). Then, you can replace same files using our repository. 
 
 ### Download data
-Download the TinyStories data and a subsample of OpenWebText
+
+You can download the raw data using the commands below, or download our **pre-tokenized data** directly from [Google Drive](https://drive.google.com/drive/folders/1ZdZdMzgWSapEUs4l4QgzG0J5fn5LtPoj?usp=sharing) to save time.
+
+
 
 ``` sh
 mkdir -p data
@@ -36,29 +111,30 @@ cd ..
 
 
 
-Also you can Download [our owt and TinyStories Tokenization Results in Google Drive](https://drive.google.com/drive/folders/1ZdZdMzgWSapEUs4l4QgzG0J5fn5LtPoj?usp=sharing)
+------
 
----
+## 📂 Project Structure
 
-# 📂 项目文件结构
+The core implementation is located within the `cs336` package.
 
 ```
 project_name/
 │
-├── README.md                
-├── requirements.txt         # Python 包依赖
+├── README.md                # Project documentation
+├── requirements.txt         # Python dependencies
+├── main.py                  # Entry point for training/evaluation
+├── inference.py             # Entry point for generation and justification
 │
-├── cs336/                   # the core of this project
-│   ├── models/              # llm/functions/optim/model.py
-│   ├── datasets/            # loading.py
-│   ├── tokenization/        # bpe/prepare/tokenizer.py
-│   ├── utils/               # checkpoint/config/set.py
+├── cs336/                   # Core library package
+│   ├── models/              # Model architecture (Transformer, LLM definitions)
+│   ├── datasets/            # Data loading and processing
+│   ├── tokenization/        # BPE tokenizer and preparation scripts
+│   └── utils/               # Configuration, checkpointing, and logging utils
 │
-├── configs/                 # train and generation config
-│   ├── config.yaml
-│   └── generation_config.yaml
+├── configs/                 # YAML Configuration files
+│   ├── config.yaml          # Training hyperparameters
+│   └── generation_config.yaml # Text generation settings
 │
-│── main.py          
-│── docs/                    
-
+└── docs/                    # Additional documentation
 ```
+
