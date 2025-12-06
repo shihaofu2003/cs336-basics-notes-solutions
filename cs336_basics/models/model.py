@@ -266,9 +266,9 @@ class Transformer(nn.Module):
         self.rmsNorm2 = RMSNorm(self.d_model, device=self.device)
         self.swiGlu = SwiGLU(self.d_model, self.d_ff)
 
-    def forward(self, x):
+    def forward(self, x, mask=None, token_positions=None):
         x_norm = self.rmsNorm1(x)
-        x = x + self.mha(x_norm, x_norm, x_norm)
+        x = x + self.mha(x_norm, x_norm, x_norm, mask=mask, token_positions=token_positions)
         y = x + self.swiGlu(self.rmsNorm2(x))
         return y
 
