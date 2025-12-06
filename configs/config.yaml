@@ -15,18 +15,18 @@ paths:
 
 model:
   vocab_size: 10000
-  context_length: 128
-  num_layers: 2
-  d_model: 128
-  num_heads: 4
-  d_ff: 256
-  rope_theta: 2
+  context_length: 256
+  num_layers: 4
+  d_model: 512
+  num_heads: 16
+  d_ff: 1344
+  rope_theta: 10000
 
 lr_schedule:
-    lr_max: 1e-2
-    lr_min: 1e-5
-    T_warmup: 1000
-    T_anneal: 8000
+    lr_max: 1e-3
+    lr_min: 1e-4
+    T_warmup: 100
+    T_anneal: 2250
 
 clipping:
     max_l2_norm: 1.0
@@ -35,20 +35,22 @@ clipping:
 optimizer:
   lr: 1e-3
   betas: [0.9, 0.999]
-  weight_decay: 0.0
+  weight_decay: 0.1
   eps: 1e-8
 
 trainer:
   epochs: 1
-  batch_size: 4
+  batch_size: 128
   device: "cuda"   # 如果没有显卡，会在代码里自动 fallback 到 cpu
-  iters_per_epoch: 10000      # 每个 epoch 做多少个梯度更新
-  log_interval: 100          # 每多少步打印/记录一次
-  save_interval: 2000
+  iters_per_epoch: 2500      # 每个 epoch 做多少个梯度更新
+  log_interval: 50          # 每多少步打印/记录一次
+  save_interval: 100
 
 dataset:
-  train_data_path: "${paths.data}/TinyStories/data_1000000_10000.npy"
-  train_data_shape: 1000000
+  train_data_path: "${paths.data}/TinyStories/shards/TinyStories_train_shard_00000.npy"
+  train_data_shape: 541230774
+  valid_data_path: "${paths.data}/TinyStories/shards/TinyStories_valid_shard_00000.npy"
+  valid_data_shape: 5465902
 
 wandb:
   enabled: true           # 需要时设为 false 就不会初始化 wandb
