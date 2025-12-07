@@ -95,7 +95,7 @@ Criteria:
    (Penalty: does the story repeat the same sentences or ideas excessively? Best TinyStories almost never repeat the same sentence. 10 = no harmful repetition)
 
 4. Story Completeness & Satisfaction  
-   (Does it feel like a complete little story with a proper ending, usually including "The end." or similar?)
+   (Does it feel like a complete little story? Or does it end with a proper conclusion, typically including the "<|endoftext|>" token?)
 
 5. Vocabulary & Sentence Complexity  
    (Uses only simple, age-appropriate words and short sentences like real TinyStories? Almost no complex clauses.)

@@ -44,7 +44,17 @@ Larger training budgets will likely achieve even lower loss.
 
 We evaluate generated stories with **Qwen3-max** as an LLM-based judge:
 
-- Story quality score: **7.6 / 10**
+- Story quality score: **8.4 / 10**
+
+ ```js
+     Lily and Ben are friends. They like to play with toys and read books. One day, they find a big box in the backyard. The box has many toys inside.
+    "Wow! Look at this!" Lily says. "We can unpack this box and pretend we are pirates or princesses."
+    "I am so happy!" Ben says. "Let's play pirates. We can make anything together!"
+    They put the box under the bed and look for treasure. They put some old toys, some stickers, and some crayons on paper. They write their stories and share them with each other. They have fun.
+    They are friends.
+ ```
+
+  
 
 ------
 
