@@ -52,6 +52,7 @@ We evaluate generated stories with **Qwen3-max** as an LLM-based judge:
     "I am so happy!" Ben says. "Let's play pirates. We can make anything together!"
     They put the box under the bed and look for treasure. They put some old toys, some stickers, and some crayons on paper. They write their stories and share them with each other. They have fun.
     They are friends.
+    
  ```
 
   
@@ -76,7 +77,9 @@ We evaluate generated stories with **Qwen3-max** as an LLM-based judge:
 
   *  [Lec2: PyTorch & Resource Accounting](https://eager-alibi-97f.notion.site/Lec2-PyTorch-resource-accounting-2b1f0625020f80d781d1f570c63a3e5d)
 
-  
+  *  [Lec3:  most of the large LMs have in common](https://eager-alibi-97f.notion.site/Lec3-most-of-the-large-LMs-have-in-common-2c5f0625020f80e68b87e489c3f0110f?source=copy_link)
+
+    
 
 * Tokenized Data
 
