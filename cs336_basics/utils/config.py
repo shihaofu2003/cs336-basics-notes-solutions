@@ -55,6 +55,7 @@ class TrainerConfig:
     epochs: int = 1
     batch_size: int = 64
     device: str = "cuda"
+    z_loss: float = 0.0
     iters_per_epoch: int = 1000
     log_interval: int = 100
     save_interval: int = 1000

@@ -42,6 +42,7 @@ trainer:
   epochs: 1
   batch_size: 128
   device: "cuda"   # 如果没有显卡，会在代码里自动 fallback 到 cpu
+  z_loss: 0.0
   iters_per_epoch: 2500      # 每个 epoch 做多少个梯度更新
   log_interval: 50          # 每多少步打印/记录一次
   save_interval: 100

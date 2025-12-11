@@ -40,7 +40,7 @@ def scaled_dot_product_attention(queries: torch.Tensor, keys: torch.Tensor, valu
     return einsum(scores_norm, values, "batch ... seq_q seq_k, batch ... seq_k d_k -> batch ... seq_q d_k")
 
 
-def cross_entropy(logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+def cross_entropy(logits: torch.Tensor, target: torch.Tensor, z_loss: float = 0.0) -> torch.Tensor:
     # 由于在计算 softmax 时采用了 exp 操作，对于大型数据而言， exp 是指数爆炸的，导致数据在 exp 的倍数比原始倍数更大。
     # 可能导致某些数据在 softmax 后为 0，不适合作为 log 的输入
 
@@ -53,7 +53,8 @@ def cross_entropy(logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     logits_target = logits.gather(dim=-1, index=target)
     logits_log_sum_exp = torch.log(torch.sum(torch.exp(logits), dim=-1, keepdim=True))
 
-    cross_entropy_loss = reduce(logits_log_sum_exp - logits_target, "batch ... -> ", reduction="mean")
+    cross_entropy_loss = reduce(logits_log_sum_exp - logits_target - z_loss * logits_log_sum_exp ** 2,
+                                "batch ... -> ", reduction="mean")
     return cross_entropy_loss
 
 
